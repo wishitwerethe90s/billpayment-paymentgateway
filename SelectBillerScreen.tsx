@@ -1,15 +1,24 @@
 import * as React from 'react';
 import { Grid, TextField, Typography, useTheme } from '@mui/material';
 import BillerCard from './BillerCard';
-import { Route, Routes } from 'react-router-dom';
-import CheckoutPage from './CheckoutPage'; // Import CheckoutPage component
+import { Route, Routes, useParams } from 'react-router-dom'; // Import useParams
+
+interface Biller {
+  id: number;
+  name: string;
+  category: string;
+  logoUrl: string;
+  type: string; // Updated to handle multiple types
+  prepaidFields?: string[]; // Fields required for prepaid option
+  postpaidFields?: string[]; // Fields required for postpaid option
+}
 
 const SelectBillerScreen: React.FC = () => {
   const theme = useTheme();
   const [searchTerm, setSearchTerm] = React.useState<string>('');
 
   // Dummy data (replace with actual data fetched from backend)
-  const billers = [
+  const billers: Biller[] = [
     { 
       id: 1, 
       name: 'Electricity Provider A', 
@@ -78,7 +87,7 @@ const SelectBillerScreen: React.FC = () => {
       <Routes>
         {filteredBillers.map(biller => (
           <Route key={biller.id} path={`/checkout/${biller.id}`}>
-            <CheckoutPage location={{ state: { requiredFields: biller.type.includes('Prepaid') ? biller.prepaidFields : biller.postpaidFields } }} />
+            <CheckoutPage biller={biller} />
           </Route>
         ))}
       </Routes>

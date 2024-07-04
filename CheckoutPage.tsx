@@ -1,18 +1,21 @@
 import * as React from 'react';
-import { useParams } from 'react-router-dom';
 import { Grid, Typography, TextField, Button, useTheme } from '@mui/material';
 
-interface CheckoutPageProps {
-  location: {
-    state: {
-      requiredFields: string[];
-    };
-  };
+interface Biller {
+  id: number;
+  name: string;
+  category: string;
+  logoUrl: string;
+  type: string;
+  prepaidFields?: string[];
+  postpaidFields?: string[];
 }
 
-const CheckoutPage: React.FC<CheckoutPageProps> = ({ location }) => {
-  const { requiredFields } = location.state;
-  const { billerId } = useParams(); // Fetch billerId from URL params
+interface CheckoutPageProps {
+  biller: Biller;
+}
+
+const CheckoutPage: React.FC<CheckoutPageProps> = ({ biller }) => {
   const theme = useTheme();
 
   // State to hold form data
@@ -31,11 +34,20 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ location }) => {
     // Example: Redirect to success page or handle API call
   };
 
+  // Determine the required fields based on selected type (prepaid or postpaid)
+  let requiredFields: string[] = [];
+  if (biller.type.includes('Prepaid')) {
+    requiredFields = biller.prepaidFields || [];
+  }
+  if (biller.type.includes('Postpaid')) {
+    requiredFields = biller.postpaidFields || [];
+  }
+
   return (
     <Grid container style={{ padding: theme.spacing(3) }} spacing={3}>
       <Grid item xs={12}>
         <Typography variant="h4" gutterBottom>
-          Bill Checkout - {billerId}
+          Bill Checkout - {biller.name}
         </Typography>
         <Typography variant="subtitle1" gutterBottom>
           Required Fields: {requiredFields.join(', ')}
