@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Grid, TextField, Typography, Card, CardContent, CardMedia } from '@mui/material';
+import { Grid, TextField, Typography, Card, CardContent, CardMedia, useTheme } from '@mui/material';
 
 const SelectBillerScreen: React.FC = () => {
+  const theme = useTheme();
   const [searchTerm, setSearchTerm] = React.useState<string>('');
 
   // Dummy data (replace with actual data fetched from backend)
@@ -17,7 +18,7 @@ const SelectBillerScreen: React.FC = () => {
   );
 
   return (
-    <Grid container spacing={3}>
+    <Grid container style={{ padding: theme.spacing(3) }} spacing={3}>
       <Grid item xs={12}>
         <Typography variant="h4" gutterBottom>
           Select a Biller
@@ -28,21 +29,33 @@ const SelectBillerScreen: React.FC = () => {
           fullWidth
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ marginBottom: '16px' }}
+          style={{ marginBottom: theme.spacing(2) }}
         />
       </Grid>
       <Grid item xs={12}>
         <Grid container spacing={3}>
           {filteredBillers.map(biller => (
             <Grid item xs={12} sm={6} md={4} key={biller.id}>
-              <Card variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <Card
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  height: '100%',
+                  transition: 'transform 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
+                }}
+                variant="outlined"
+              >
                 <CardMedia
                   component="img"
                   height="140"
                   image={biller.logoUrl}
                   alt={`${biller.name} logo`}
                 />
-                <CardContent sx={{ flexGrow: 1 }}>
+                <CardContent>
                   <Typography gutterBottom variant="h6" component="div">
                     {biller.name}
                   </Typography>
