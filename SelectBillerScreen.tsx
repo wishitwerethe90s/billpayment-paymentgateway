@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Grid, TextField, Typography, useTheme } from '@mui/material';
 import BillerCard from './BillerCard';
+import { Route, Routes } from 'react-router-dom';
+import CheckoutPage from './CheckoutPage'; // Import CheckoutPage component
 
 const SelectBillerScreen: React.FC = () => {
   const theme = useTheme();
@@ -73,6 +75,13 @@ const SelectBillerScreen: React.FC = () => {
           ))}
         </Grid>
       </Grid>
+      <Routes>
+        {filteredBillers.map(biller => (
+          <Route key={biller.id} path={`/checkout/${biller.id}`}>
+            <CheckoutPage location={{ state: { requiredFields: biller.type.includes('Prepaid') ? biller.prepaidFields : biller.postpaidFields } }} />
+          </Route>
+        ))}
+      </Routes>
     </Grid>
   );
 };
