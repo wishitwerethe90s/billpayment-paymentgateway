@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Grid, TextField, Typography, Card, CardContent, CardMedia, useTheme } from '@mui/material';
+import { Grid, TextField, Typography, useTheme } from '@mui/material';
+import BillerCard from './BillerCard';
 
 const SelectBillerScreen: React.FC = () => {
   const theme = useTheme();
@@ -7,9 +8,40 @@ const SelectBillerScreen: React.FC = () => {
 
   // Dummy data (replace with actual data fetched from backend)
   const billers = [
-    { id: 1, name: 'Electricity Provider A', category: 'Electricity', logoUrl: '/images/electricity-logo.png' },
-    { id: 2, name: 'Water Provider B', category: 'Water', logoUrl: '/images/water-logo.png' },
-    { id: 3, name: 'Internet Provider C', category: 'Internet', logoUrl: '/images/internet-logo.png' },
+    { 
+      id: 1, 
+      name: 'Electricity Provider A', 
+      category: 'Electricity', 
+      logoUrl: '/images/electricity-logo.png', 
+      type: 'Prepaid', 
+      prepaidFields: ['accountNumber', 'customerID'] 
+    },
+    { 
+      id: 2, 
+      name: 'Water Provider B', 
+      category: 'Water', 
+      logoUrl: '/images/water-logo.png', 
+      type: 'Postpaid', 
+      postpaidFields: ['accountNumber'] 
+    },
+    { 
+      id: 3, 
+      name: 'Internet Provider C', 
+      category: 'Internet', 
+      logoUrl: '/images/internet-logo.png', 
+      type: 'Prepaid/Postpaid', 
+      prepaidFields: ['username', 'password'],
+      postpaidFields: ['username']
+    },
+    { 
+      id: 4, 
+      name: 'Phone Recharge', 
+      category: 'Phone', 
+      logoUrl: '/images/phone-logo.png', 
+      type: 'Prepaid/Postpaid', 
+      prepaidFields: ['phoneNumber', 'amount'],
+      postpaidFields: ['phoneNumber', 'amount', 'accountID']
+    },
     // Add more billers as needed
   ];
 
@@ -36,34 +68,7 @@ const SelectBillerScreen: React.FC = () => {
         <Grid container spacing={3}>
           {filteredBillers.map(biller => (
             <Grid item xs={12} sm={6} md={4} key={biller.id}>
-              <Card
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  height: '100%',
-                  transition: 'transform 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.05)',
-                  },
-                }}
-                variant="outlined"
-              >
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image={biller.logoUrl}
-                  alt={`${biller.name} logo`}
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h6" component="div">
-                    {biller.name}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {biller.category}
-                  </Typography>
-                </CardContent>
-              </Card>
+              <BillerCard biller={biller} />
             </Grid>
           ))}
         </Grid>
