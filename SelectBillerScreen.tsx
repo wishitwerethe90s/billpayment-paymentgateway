@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Grid, TextField, Typography, useTheme } from '@mui/material';
 import BillerCard from './BillerCard';
-import { Route, Routes, useParams } from 'react-router-dom'; // Import useParams
+import { Route, Routes } from 'react-router-dom'; // Import Route and Routes
+import CheckoutPage from './CheckoutPage'; // Import CheckoutPage component
 
 interface Biller {
   id: number;
@@ -86,9 +87,7 @@ const SelectBillerScreen: React.FC = () => {
       </Grid>
       <Routes>
         {filteredBillers.map(biller => (
-          <Route key={biller.id} path={`/checkout/${biller.id}`}>
-            <CheckoutPage biller={biller} />
-          </Route>
+          <Route key={biller.id} path={`/checkout/${biller.id}`} element={<CheckoutPage biller={biller} />} />
         ))}
       </Routes>
     </Grid>
