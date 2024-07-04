@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { Grid, Typography, TextField, Button, useTheme } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import billersData from './billers.json'; // Import billers data directly
 
 interface Biller {
   id: number;
@@ -11,12 +13,31 @@ interface Biller {
   postpaidFields?: string[];
 }
 
-interface CheckoutPageProps {
-  biller: Biller;
-}
-
-const CheckoutPage: React.FC<CheckoutPageProps> = ({ biller }) => {
+const CheckoutPage: React.FC = () => {
   const theme = useTheme();
+  const { billerId } = useParams();
+  const selectedBiller = billersData.find(biller => biller.id === parseInt(billerId));
+
+  if (!selectedBiller) {
+    return (
+      <Grid container style={{ padding: theme.spacing(3) }} spacing={3}>
+        <Grid item xs={12}>
+          <Typography variant="h4" gutterBottom>
+            Biller not found
+          </Typography>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  // Determine the required fields based on selected type (prepaid or postpaid)
+  let requiredFields: string[] = [];
+  if (selectedBiller.type.includes('Prepaid')) {
+    requiredFields = selectedBiller.prepaidFields || [];
+  }
+  if (selectedBiller.type.includes('Postpaid')) {
+    requiredFields = selectedBiller.postpaidFields || [];
+  }
 
   // State to hold form data
   const [formData, setFormData] = React.useState<{ [key: string]: string }>({});
@@ -34,20 +55,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ biller }) => {
     // Example: Redirect to success page or handle API call
   };
 
-  // Determine the required fields based on selected type (prepaid or postpaid)
-  let requiredFields: string[] = [];
-  if (biller.type.includes('Prepaid')) {
-    requiredFields = biller.prepaidFields || [];
-  }
-  if (biller.type.includes('Postpaid')) {
-    requiredFields = biller.postpaidFields || [];
-  }
-
   return (
     <Grid container style={{ padding: theme.spacing(3) }} spacing={3}>
       <Grid item xs={12}>
         <Typography variant="h4" gutterBottom>
-          Bill Checkout - {biller.name}
+          Bill Checkout - {selectedBiller.name}
         </Typography>
         <Typography variant="subtitle1" gutterBottom>
           Required Fields: {requiredFields.join(', ')}

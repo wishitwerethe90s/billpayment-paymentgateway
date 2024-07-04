@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Grid, TextField, Typography, useTheme } from '@mui/material';
 import BillerCard from './BillerCard';
-import { Route, Routes } from 'react-router-dom'; // Import Route and Routes
-import CheckoutPage from './CheckoutPage'; // Import CheckoutPage component
+import { useNavigate } from 'react-router-dom';
+import billersData from './billers.json'; // Import billers data directly
 
 interface Biller {
   id: number;
@@ -17,49 +17,15 @@ interface Biller {
 const SelectBillerScreen: React.FC = () => {
   const theme = useTheme();
   const [searchTerm, setSearchTerm] = React.useState<string>('');
+  const navigate = useNavigate();
 
-  // Dummy data (replace with actual data fetched from backend)
-  const billers: Biller[] = [
-    { 
-      id: 1, 
-      name: 'Electricity Provider A', 
-      category: 'Electricity', 
-      logoUrl: '/images/electricity-logo.png', 
-      type: 'Prepaid', 
-      prepaidFields: ['accountNumber', 'customerID'] 
-    },
-    { 
-      id: 2, 
-      name: 'Water Provider B', 
-      category: 'Water', 
-      logoUrl: '/images/water-logo.png', 
-      type: 'Postpaid', 
-      postpaidFields: ['accountNumber'] 
-    },
-    { 
-      id: 3, 
-      name: 'Internet Provider C', 
-      category: 'Internet', 
-      logoUrl: '/images/internet-logo.png', 
-      type: 'Prepaid/Postpaid', 
-      prepaidFields: ['username', 'password'],
-      postpaidFields: ['username']
-    },
-    { 
-      id: 4, 
-      name: 'Phone Recharge', 
-      category: 'Phone', 
-      logoUrl: '/images/phone-logo.png', 
-      type: 'Prepaid/Postpaid', 
-      prepaidFields: ['phoneNumber', 'amount'],
-      postpaidFields: ['phoneNumber', 'amount', 'accountID']
-    },
-    // Add more billers as needed
-  ];
-
-  const filteredBillers = billers.filter(biller =>
+  const filteredBillers = billersData.filter(biller =>
     biller.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleBillerClick = (billerId: number) => {
+    navigate(`/bill-checkout/${billerId}`);
+  };
 
   return (
     <Grid container style={{ padding: theme.spacing(3) }} spacing={3}>
@@ -80,16 +46,14 @@ const SelectBillerScreen: React.FC = () => {
         <Grid container spacing={3}>
           {filteredBillers.map(biller => (
             <Grid item xs={12} sm={6} md={4} key={biller.id}>
-              <BillerCard biller={biller} />
+              <BillerCard
+                biller={biller}
+                onClick={() => handleBillerClick(biller.id)}
+              />
             </Grid>
           ))}
         </Grid>
       </Grid>
-      <Routes>
-        {filteredBillers.map(biller => (
-          <Route key={biller.id} path={`/checkout/${biller.id}`} element={<CheckoutPage biller={biller} />} />
-        ))}
-      </Routes>
     </Grid>
   );
 };
