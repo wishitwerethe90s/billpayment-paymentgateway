@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, Typography, TextField, Button, useTheme } from '@mui/material';
+import { Grid, Typography, TextField, Button, useTheme, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import billersData from './billers.json'; // Import billers data directly
 
@@ -18,6 +18,13 @@ const CheckoutPage: React.FC = () => {
   const { billerId } = useParams();
   const selectedBiller = billersData.find(biller => biller.id === parseInt(billerId));
 
+  const [billType, setBillType] = React.useState<string>(
+    selectedBiller && selectedBiller.prepaidFields && selectedBiller.postpaidFields
+      ? 'prepaid' // Default to prepaid if both options are available
+      : (selectedBiller && selectedBiller.prepaidFields ? 'prepaid' : 'postpaid')
+  );
+  const [formData, setFormData] = React.useState<{ [key: string]: string }>({});
+
   if (!selectedBiller) {
     return (
       <Grid container style={{ padding: theme.spacing(3) }} spacing={3}>
@@ -29,18 +36,6 @@ const CheckoutPage: React.FC = () => {
       </Grid>
     );
   }
-
-  // Determine the required fields based on selected type (prepaid or postpaid)
-  let requiredFields: string[] = [];
-  if (selectedBiller.type.includes('Prepaid')) {
-    requiredFields = selectedBiller.prepaidFields || [];
-  }
-  if (selectedBiller.type.includes('Postpaid')) {
-    requiredFields = selectedBiller.postpaidFields || [];
-  }
-
-  // State to hold form data
-  const [formData, setFormData] = React.useState<{ [key: string]: string }>({});
 
   // Function to handle form field changes
   const handleFieldChange = (fieldName: string, value: string) => {
@@ -61,23 +56,48 @@ const CheckoutPage: React.FC = () => {
         <Typography variant="h4" gutterBottom>
           Bill Checkout - {selectedBiller.name}
         </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          Required Fields: {requiredFields.join(', ')}
-        </Typography>
+        {selectedBiller.prepaidFields && selectedBiller.postpaidFields && (
+          <RadioGroup
+            row
+            aria-label="billType"
+            name="billType"
+            value={billType}
+            onChange={(e) => setBillType(e.target.value)}
+          >
+            <FormControlLabel value="prepaid" control={<Radio />} label="Prepaid" />
+            <FormControlLabel value="postpaid" control={<Radio />} label="Postpaid" />
+          </RadioGroup>
+        )}
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            {requiredFields.map(field => (
-              <Grid item xs={12} key={field}>
-                <TextField
-                  fullWidth
-                  label={field}
-                  variant="outlined"
-                  value={formData[field] || ''}
-                  onChange={(e) => handleFieldChange(field, e.target.value)}
-                  required
-                />
-              </Grid>
-            ))}
+            {(billType === 'prepaid' || !selectedBiller.postpaidFields) && selectedBiller.prepaidFields && (
+              selectedBiller.prepaidFields.map(field => (
+                <Grid item xs={12} key={field}>
+                  <TextField
+                    fullWidth
+                    label={field}
+                    variant="outlined"
+                    value={formData[field] || ''}
+                    onChange={(e) => handleFieldChange(field, e.target.value)}
+                    required
+                  />
+                </Grid>
+              ))
+            )}
+            {(billType === 'postpaid' || !selectedBiller.prepaidFields) && selectedBiller.postpaidFields && (
+              selectedBiller.postpaidFields.map(field => (
+                <Grid item xs={12} key={field}>
+                  <TextField
+                    fullWidth
+                    label={field}
+                    variant="outlined"
+                    value={formData[field] || ''}
+                    onChange={(e) => handleFieldChange(field, e.target.value)}
+                    required
+                  />
+                </Grid>
+              ))
+            )}
             <Grid item xs={12}>
               <Button type="submit" variant="contained" color="primary">
                 Pay Now
